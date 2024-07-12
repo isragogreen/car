@@ -32,16 +32,20 @@ public:
             return *this;
         }
 
+
         name = other.name;
 		speed = other.speed;
 
         return *this;
     }
 
-    virtual ~Car() 
+    virtual ~Car()  
     {
-        std::cout << "Car: Destructor called" << std::endl;
+        
     }
+
+    virtual void driveAll () = 0;
+
 
     void setName(const std::string& value) 
 	{
@@ -72,10 +76,7 @@ public:
         return speed;
     }
 
-    virtual void drive() const
-    {
-        std::cout << "Car: Driving " << name << " at speed " << speed << " km/h." << std::endl;
-    }
+    virtual void drive() const { std::cout << "only car ";}
 };
 
 class Vehicle : public Car
@@ -97,6 +98,18 @@ public:
         : Car(other), make(other.make), model(other.model), year(other.year)
     {
         std::cout << "Vehicle: Copy constructor called" << std::endl;
+    }
+
+    Vehicle& operator=(const Vehicle& other) {
+        std::cout << "Vehicle: copy assignment operator called" << std::endl;
+
+        if (this != &other) {
+            Car::operator=(other);
+            this->make = other.make;
+            this->model = other.model;
+            this->year = other.year;
+        }
+        return *this;
     }
 
     virtual ~Vehicle() override
@@ -136,8 +149,11 @@ public:
 
     virtual void drive() const override
     {
-        std::cout << "Vehicle: Driving " << make << " " << model << " "
-		<< getName() << " " << year << "." << std::endl;
+        std::cout << "Vehicle: Driving " << make << "vehicle++++++++" << std::endl;
+    }
+
+    virtual void driveAll() {
+        std::cout << "Vehicle drive all" << std::endl;
     }
 
     // Сделаем метод setSpeed виртуальным, чтобы можно было его переопределить в производных классах
@@ -175,6 +191,16 @@ public:
         std::cout << "SportsCar: Copy constructor called" << std::endl;
     }
 
+    SportsCar& operator=(const SportsCar& other) {
+        std::cout << "SportsCar: copy assignment operator called" << std::endl;
+        if (this != &other) {
+            Vehicle::operator=(other);
+            this->maxSpeed = other.maxSpeed;
+            this->driveType = other.driveType;
+        }
+        return *this;
+    }
+
     ~SportsCar() override
     {
         std::cout << "SportsCar: Destructor called" << std::endl;
@@ -200,11 +226,11 @@ public:
         return driveType;
     }
 
-    void drive() const override
+    virtual void drive() const override
     {
         std::cout << "SportsCar: Driving " << make << " " << model << " " << getName() << " "
                   << year << ". Max speed: " << maxSpeed << " km/h. Drive type: "
-                  << driveType << "." << std::endl;
+                  << driveType << ". SportCar" << std::endl;
     }
 
     void setSpeed(unsigned int speed) override
@@ -218,18 +244,23 @@ public:
             std::cout << "SportsCar: Error: Speed value exceeds maximum allowed for SportsCar." << std::endl;
         }
     }
+
+    virtual void driveAll () 
+    {
+        std::cout << "empty" << std::endl;
+    };
 };
 
 int main()
 {
     // Пример использования класса Car
-    std::cout << "=== Example using Car ===" << std::endl;
-    Car car("Toyota", 180);
-    car.drive();
+ //   std::cout << "=== Example using Car ===" << std::endl;
+   // Car car("Toyota", 180);
+    // car.drive();
 
-    std::cout << "Setting new speed for Car..." << std::endl;
-    car.setSpeed(200); // Установка новой скорости для Car
-    car.drive(); // Повторный вызов drive, чтобы увидеть изменение
+   // std::cout << "Setting new speed for Car..." << std::endl;
+    // car.setSpeed(200); // Установка новой скорости для Car
+    // car.drive(); // Повторный вызов drive, чтобы увидеть изменение
 
     std::cout << std::endl;
 
@@ -257,9 +288,20 @@ int main()
     sportsCar.setSpeed(4294967295); // Попытка установить скорость, которая превышает максимально допустимую для unsigned int
     sportsCar.setSpeed(429);
 	sportsCar.setSpeed(-2);
+std::cout << "continue ====================================" << std::endl;
+  Car& car1 ;
+  car1 = vehicle;
+ //   car1 = car;
+
+ Car& car2 = sportsCar;
+
+ //   car1 = car2;
+std::cout << "continue ====================================" << std::endl;
+    car1.drive();
+ //   std::cout << "=== Example using SportsCar ===" << car1.getModel() << std::endl
+ car2.drive();
 	
 	
-	sportsCar.drive(); // Должно вывести сообщение об ошибке
 
     return 0;
 }
